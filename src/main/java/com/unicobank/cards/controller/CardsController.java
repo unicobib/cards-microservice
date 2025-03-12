@@ -1,6 +1,7 @@
 package com.unicobank.cards.controller;
 
 import com.unicobank.cards.constants.CardsConstants;
+import com.unicobank.cards.dto.CardsContactInfoDto;
 import com.unicobank.cards.dto.CardsDto;
 import com.unicobank.cards.dto.ErrorResponseDto;
 import com.unicobank.cards.dto.ResponseDto;
@@ -13,7 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +27,20 @@ import org.springframework.web.bind.annotation.*;
 )
 @RestController
 @RequestMapping(path = "/api/cards/", produces = {MediaType.APPLICATION_JSON_VALUE})
-@AllArgsConstructor
 @Validated
 public class CardsController {
 
-    private ICardsService cardsService;
+    private final ICardsService cardsService;
+
+    private final CardsContactInfoDto cardsContactInfoDto;
+
+    @Value("${build.version}")
+    private String buildVersion;
+
+    public CardsController(ICardsService cardsService, CardsContactInfoDto cardsContactInfoDto) {
+        this.cardsService = cardsService;
+        this.cardsContactInfoDto = cardsContactInfoDto;
+    }
 
     @Operation(
             summary = "Create Card REST API",
@@ -151,5 +161,35 @@ public class CardsController {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(CardsConstants.STATUS_417, CardsConstants.MESSAGE_417_DELETE));
         }
+    }
+
+    @Operation(
+            summary = "Fetch Build Info REST API",
+            description = "REST API to fetch Build Info"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/v1/build-info")
+    public ResponseEntity<String> getBuildInfo() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(buildVersion);
+    }
+
+    @Operation(
+            summary = "Connect to the contact person for any issue",
+            description = "REST API to fetch contact info"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/v1/contact-info")
+    public ResponseEntity<CardsContactInfoDto> getContactInfo() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(cardsContactInfoDto);
     }
 }

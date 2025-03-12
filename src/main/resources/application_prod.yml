@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+
+build:
+  version: "2.0"
+
+cards:
+  name: "Welcome to Unicobank Prod loans APIs"
+  contactDetails:
+    name: "Rudra Bhora - Product Owner"
+    email: "bhora.rudra@bank.com"
+  onCallSupport:
+    - (91) 4332-091234
+    - (91) 4569-234102
